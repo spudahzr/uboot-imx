@@ -1,0 +1,12 @@
+if TARGET_MX6Q_ITOP
+
+config SYS_BOARD
+	default "mx6q_iTop"
+
+config SYS_VENDOR
+	default "freescale"
+
+config SYS_CONFIG_NAME
+	default "mx6q_iTop"
+
+endif

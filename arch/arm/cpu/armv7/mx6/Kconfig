@@ -237,6 +237,9 @@ config TARGET_MX6SXSCM
         select MX6SX
         select DM
         select DM_THERMAL
+config TARGET_MX6Q_ITOP
+    bool "Support mx6q_iTop"
+    select CPU_V7
 
 endchoice
 
@@ -278,5 +281,6 @@ source "board/wandboard/Kconfig"
 source "board/warp/Kconfig"
 source "board/freescale/mx6dqscm/Kconfig"
 source "board/freescale/mx6sxscm/Kconfig"
+source "board/freescale/mx6q_iTop/Kconfig"
 
 endif

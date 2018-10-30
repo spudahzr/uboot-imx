@@ -1,0 +1,6 @@
+MX6Q_ITOP BOARD
+M:	Neo Hei <Neo.Hei@neo.com>
+S:	Maintained
+F:	board/freescale/mx6q_iTop/
+F:	include/configs/mx6q_iTop.h
+F:	configs/mx6qiTop_defconfig
