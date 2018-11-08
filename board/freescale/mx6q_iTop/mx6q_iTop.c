@@ -1014,7 +1014,6 @@ int power_init_board(void)
 #ifdef CONFIG_LDO_BYPASS_CHECK
 void ldo_mode_set(int ldo_bypass)
 {
-    #if 0
 	unsigned int value;
 	int is_400M;
 	unsigned char vddarm;
@@ -1118,7 +1117,6 @@ void ldo_mode_set(int ldo_bypass)
 		finish_anatop_bypass();
 		printf("switch to ldo_bypass mode!\n");
 	}
-    #endif
 }
 #endif
 

@@ -40,6 +40,36 @@
 #define CONFIG_SF_DEFAULT_CS   0
 #endif
 
+#ifdef CONFIG_LOADADDR
+#undef CONFIG_LOADADDR
+#endif
+#define CONFIG_LOADADDR		0x10800000
+
+
+#define CONFIG_IMAGE_FORMAT_LEGACY
+
+#ifdef CONFIG_EXTRA_ENV_SETTINGS
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#endif
+#define	CONFIG_EXTRA_ENV_SETTINGS					\
+		"netdev=eth0\0"						\
+		"ethprime=FEC0\0"					\
+		"uboot=u-boot.bin\0"			\
+		"kernel=uImage\0"				\
+		"nfsroot=/opt/eldk/arm\0"				\
+		"bootargs_base=setenv bootargs console=ttymxc0,115200\0"\
+		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
+			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
+		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
+			"tftpboot ${loadaddr} ${kernel}; bootm\0"	\
+		"bootargs_mmc=setenv bootargs ${bootargs} ip=dhcp "     \
+			"root=/dev/mmcblk0p1 rootwait\0"                \
+		"bootcmd_mmc=run bootargs_base bootargs_mmc; "   \
+		"mmc dev 2; "	\
+		"mmc read ${loadaddr} 0x800 0x3000; bootm;\0"	\
+		"bootcmd=run bootcmd_mmc\0"                             \
+
+
 /*
  * imx6 q/dl/solo pcie would be failed to work properly in kernel, if
  * the pcie module is iniialized/enumerated both in uboot and linux
@@ -95,5 +125,8 @@
 
 	#define CONFIG_WAVEFORM_BUF_SIZE		0x200000
 #endif /* CONFIG_SPLASH_SCREEN && CONFIG_MXC_EPDC */
+
+#undef CONFIG_LDO_BYPASS_CHECK
+
 
 #endif                         /* __MX6Q_ITOP_CONFIG_H */
