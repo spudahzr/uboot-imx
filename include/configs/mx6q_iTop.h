@@ -18,12 +18,12 @@
 #define CONFIG_MACH_TYPE	3980
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONFIG_CONSOLE_DEV		"ttymxc0"
-#define CONFIG_MMCROOT			"/dev/mmcblk2p2"  /* SDHC3 */
+#define CONFIG_MMCROOT			"/dev/mmcblk0p1"  /* SDHC3 */
 
 #if defined(CONFIG_MX6QP)
 #define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
 #elif defined(CONFIG_MX6Q)
-#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
+#define PHYS_SDRAM_SIZE		(2u * 1024 * 1024 * 1024)
 #elif defined(CONFIG_MX6DL)
 #define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
 #elif defined(CONFIG_MX6SOLO)
@@ -45,8 +45,7 @@
 #endif
 #define CONFIG_LOADADDR		0x10800000
 
-
-#define CONFIG_IMAGE_FORMAT_LEGACY
+#define CONFIG_DEFAULT_FDT_FILE     "imx6q-sabresd.dtb"
 
 #ifdef CONFIG_EXTRA_ENV_SETTINGS
 #undef CONFIG_EXTRA_ENV_SETTINGS
@@ -56,17 +55,22 @@
 		"ethprime=FEC0\0"					\
 		"uboot=u-boot.bin\0"			\
 		"kernel=uImage\0"				\
+        "fdt_high=0xffffffff\0"     \
+        "fdt_addr=0x12000000\0"     \
 		"nfsroot=/opt/eldk/arm\0"				\
-		"bootargs_base=setenv bootargs console=ttymxc0,115200\0"\
+		"bootargs_base=setenv bootargs console="CONFIG_CONSOLE_DEV",115200\0"\
 		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
 			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
 		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
 			"tftpboot ${loadaddr} ${kernel}; bootm\0"	\
 		"bootargs_mmc=setenv bootargs ${bootargs} ip=dhcp "     \
-			"root=/dev/mmcblk0p1 rootwait\0"                \
+			"root="CONFIG_MMCROOT" rootwait\0"                \
 		"bootcmd_mmc=run bootargs_base bootargs_mmc; "   \
 		"mmc dev 2; "	\
-		"mmc read ${loadaddr} 0x800 0x3000; bootm;\0"	\
+		"mmc read ${loadaddr} 0x800 0x4000;"       \
+        "mmc read ${fdt_addr} 0x4800 0x800;" 	\
+        "fdt addr ${fdt_addr};"     \
+        "bootm ${loadaddr} - ${fdt_addr};\0"	\
 		"bootcmd=run bootcmd_mmc\0"                             \
 
 
