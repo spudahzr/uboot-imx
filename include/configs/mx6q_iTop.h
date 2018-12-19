@@ -18,7 +18,7 @@
 #define CONFIG_MACH_TYPE	3980
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONFIG_CONSOLE_DEV		"ttymxc0"
-#define CONFIG_MMCROOT			"/dev/mmcblk0p1"  /* SDHC3 */
+#define CONFIG_MMCROOT			"/dev/mmcblk3p1"  /* SDHC4 */
 
 #if defined(CONFIG_MX6QP)
 #define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
@@ -40,19 +40,49 @@
 #define CONFIG_SF_DEFAULT_CS   0
 #endif
 
+/*  Load file config  */
 #ifdef CONFIG_LOADADDR
 #undef CONFIG_LOADADDR
 #endif
 #define CONFIG_LOADADDR		0x10800000
 
 #define CONFIG_DEFAULT_FDT_FILE     "imx6q-sabresd.dtb"
+/*  end of Load file config  */
 
+/*  Net config  */
+#ifdef CONFIG_PHY_ATHEROS
+#undef CONFIG_PHY_ATHEROS
+#endif
+#ifndef CONFIG_PHY_REALTEK
+#define CONFIG_PHY_REALTEK
+#endif
+#ifdef CONFIG_FEC_MXC_PHYADDR
+#undef CONFIG_FEC_MXC_PHYADDR
+#endif
+#define CONFIG_FEC_MXC_PHYADDR      4
+#ifdef CONFIG_ETHPRIME
+#undef CONFIG_ETHPRIME
+#endif
+#define CONFIG_ETHPRIME         "FEC"
+
+#define CONFIG_ETHADDR          "12:34:56:78:90:AB"
+#define CONFIG_IPADDR           192.168.0.6
+#define CONFIG_SERVERIP         192.168.0.1
+#define CONFIG_NETMASK          255.255.255.0
+#define CONFIG_GATEWAYIP        192.168.0.2
+
+#define DEBUG
+
+
+/*  end of Net config  */
+
+/*  env setting config  */
 #ifdef CONFIG_EXTRA_ENV_SETTINGS
 #undef CONFIG_EXTRA_ENV_SETTINGS
 #endif
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 		"netdev=eth0\0"						\
-		"ethprime=FEC0\0"					\
+        "ethaddr="CONFIG_ETHADDR"\0"        \
 		"uboot=u-boot.bin\0"			\
 		"kernel=uImage\0"				\
         "fdt_high=0xffffffff\0"     \
@@ -72,7 +102,7 @@
         "fdt addr ${fdt_addr};"     \
         "bootm ${loadaddr} - ${fdt_addr};\0"	\
 		"bootcmd=run bootcmd_mmc\0"                             \
-
+/*  end of env setting config  */
 
 /*
  * imx6 q/dl/solo pcie would be failed to work properly in kernel, if

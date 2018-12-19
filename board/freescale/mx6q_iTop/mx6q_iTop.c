@@ -55,7 +55,10 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
 
 #define ENET_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
-	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
+	PAD_CTL_SPEED_MED | PAD_CTL_DSE_34ohm | PAD_CTL_HYS)
+
+#define ENET_PAD_RST_CTRL   (PAD_CTL_PUS_100K_UP |			\
+	PAD_CTL_SPEED_MED | PAD_CTL_DSE_DISABLE)
 
 #define SPI_PAD_CTRL (PAD_CTL_HYS | PAD_CTL_SPEED_MED | \
 		      PAD_CTL_DSE_40ohm | PAD_CTL_SRE_FAST)
@@ -92,6 +95,7 @@ static iomux_v3_cfg_t const uart1_pads[] = {
 static iomux_v3_cfg_t const enet_pads[] = {
 	MX6_PAD_ENET_MDIO__ENET_MDIO		| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_ENET_MDC__ENET_MDC		| MUX_PAD_CTRL(ENET_PAD_CTRL),
+
 	MX6_PAD_RGMII_TXC__RGMII_TXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_TD0__RGMII_TD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_TD1__RGMII_TD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
@@ -99,25 +103,27 @@ static iomux_v3_cfg_t const enet_pads[] = {
 	MX6_PAD_RGMII_TD3__RGMII_TD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_TX_CTL__RGMII_TX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_ENET_REF_CLK__ENET_TX_CLK	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+
 	MX6_PAD_RGMII_RXC__RGMII_RXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RD0__RGMII_RD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RD1__RGMII_RD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RD2__RGMII_RD2	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RD3__RGMII_RD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
-	/* AR8031 PHY Reset */
-	MX6_PAD_ENET_CRS_DV__GPIO1_IO25		| MUX_PAD_CTRL(NO_PAD_CTRL),
+	/* RTL8211 PHY Reset */
+	MX6_PAD_ENET_CRS_DV__GPIO1_IO25		| MUX_PAD_CTRL(ENET_PAD_RST_CTRL),
 };
 
 static void setup_iomux_enet(void)
 {
 	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
 
-	/* Reset AR8031 PHY */
+	/* Reset RTL8211 PHY */
 	gpio_direction_output(IMX_GPIO_NR(1, 25) , 0);
 	mdelay(10);
 	gpio_set_value(IMX_GPIO_NR(1, 25), 1);
-	udelay(100);
+	// udelay(100);
+    mdelay(30);
 }
 
 static iomux_v3_cfg_t const usdhc2_pads[] = {
@@ -682,10 +688,10 @@ struct display_info_t const displays[] = {{
 	.detect	= NULL,
 	.enable	= enable_lvds,
 	.mode	= {
-		.name           = "Hannstar-XGA",
+		.name           = "LVDS_CH1-7inch",
 		.refresh        = 60,
-		.xres           = 1024,
-		.yres           = 768,
+		.xres           = 1280,
+		.yres           = 800,
 		.pixclock       = 15385,
 		.left_margin    = 220,
 		.right_margin   = 40,
@@ -805,7 +811,7 @@ int overwrite_console(void)
 
 static void setup_fec(void)
 {
-	if (is_mx6dqp()) {
+    if (is_mx6dqp()) {
 		int ret;
 
 		/* select ENET MAC0 TX clock from PLL */
@@ -818,7 +824,7 @@ static void setup_fec(void)
 
 int board_eth_init(bd_t *bis)
 {
-	setup_iomux_enet();
+    setup_iomux_enet();
 	setup_pcie();
 
 	return cpu_eth_init(bis);
