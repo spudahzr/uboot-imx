@@ -66,12 +66,11 @@
 #define CONFIG_ETHPRIME         "FEC"
 
 #define CONFIG_ETHADDR          "12:34:56:78:90:AB"
-#define CONFIG_IPADDR           192.168.0.6
-#define CONFIG_SERVERIP         192.168.0.1
+#define CONFIG_IPADDR           192.168.6.6
+#define CONFIG_SERVERIP         192.168.6.66
 #define CONFIG_NETMASK          255.255.255.0
-#define CONFIG_GATEWAYIP        192.168.0.2
+#define CONFIG_GATEWAYIP        192.168.6.1
 
-#define DEBUG
 
 
 /*  end of Net config  */
@@ -82,26 +81,32 @@
 #endif
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 		"netdev=eth0\0"						\
-        "ethaddr="CONFIG_ETHADDR"\0"        \
-		"uboot=u-boot.bin\0"			\
+    "ethaddr="CONFIG_ETHADDR"\0"        \
+		"uboot=u-boot.imx\0"			\
 		"kernel=uImage\0"				\
-        "fdt_high=0xffffffff\0"     \
-        "fdt_addr=0x12000000\0"     \
-		"nfsroot=/opt/eldk/arm\0"				\
-		"bootargs_base=setenv bootargs console="CONFIG_CONSOLE_DEV",115200\0"\
-		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
-			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
+		"dtb_file=imx6q-iTop.dtb\0"	\
+    "fdt_high=0xffffffff\0"     \
+    "fdt_addr=0x12000000\0"     \
+		"rootpath=/home/neo/share/nfs/rootfs\0"				\
+		"bootargs_base=setenv bootargs console="CONFIG_CONSOLE_DEV",115200\0"	\
+		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "	\
+			"rw nfsroot=${serverip}:${rootpath},v3,tcp "	\
+			"ip=${ipaddr}:${serverip}:${gateway}:${netmask}::eth0::off "	\
+			"init=linuxrc;\0"	\
 		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
-			"tftpboot ${loadaddr} ${kernel}; bootm\0"	\
+			"tftpboot ${loadaddr} ${kernel};"	\
+			"tftpboot ${fdt_addr} ${dtb_file};"	\
+			"fdt addr ${fdt_addr};"     \
+			"bootm ${loadaddr} - ${fdt_addr};\0"	\
 		"bootargs_mmc=setenv bootargs ${bootargs} ip=dhcp "     \
 			"root="CONFIG_MMCROOT" rootwait\0"                \
 		"bootcmd_mmc=run bootargs_base bootargs_mmc; "   \
-		"mmc dev 2; "	\
-		"mmc read ${loadaddr} 0x800 0x4000;"       \
-        "mmc read ${fdt_addr} 0x4800 0x800;" 	\
-        "fdt addr ${fdt_addr};"     \
-        "bootm ${loadaddr} - ${fdt_addr};\0"	\
-		"bootcmd=run bootcmd_mmc\0"                             \
+			"mmc dev 2; "	\
+			"mmc read ${loadaddr} 0x800 0x4000;"       \
+      "mmc read ${fdt_addr} 0x4800 0x800;" 	\
+      "fdt addr ${fdt_addr};"     \
+      "bootm ${loadaddr} - ${fdt_addr};\0"	\
+		"bootcmd=run bootcmd_net\0"                             \
 /*  end of env setting config  */
 
 /*
